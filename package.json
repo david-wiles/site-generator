@@ -9,10 +9,14 @@
   },
   "scripts": {
     "start": "node bin/main.js",
+    "clean": "rm -rf ./bin",
     "build": "tsc",
-    "run": "tsc && node bin/main.js"
+    "run": "rm -rf ./bin && tsc && node bin/main.js"
   },
   "dependencies": {
-    "commander": "^6.1.0"
+    "@types/markdown-it": "^10.0.2",
+    "commander": "^6.1.0",
+    "escape-string-regexp": "^4.0.0",
+    "markdown-it": "^11.0.0"
   }
 }

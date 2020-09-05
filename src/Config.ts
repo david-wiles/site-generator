@@ -1,33 +1,30 @@
 import commander from "commander";
+import Path from "./common/Path";
 
 export default class Config {
-  root: string;
-  templateDir: string
-  out: string;
+  root: Path;
+  templates: Path;
+  out: Path;
   builder: string;
 
   constructor(
     root: string,
-    templateDir: string,
+    templates: string,
     out: string,
     builder: string,
   ) {
-    this.root = root;
-    this.templateDir = templateDir;
-    this.out = out;
+    this.root = new Path(root);
+    this.templates = Path.fromParts(root, templates);
+    this.out = new Path(out);
     this.builder = builder;
   }
 
   static fromArgs(args: commander.Command): Config {
     return new Config(
       args.root,
-      args.templateDir,
+      args.templates,
       args.out,
       args.builder,
     );
-  }
-
-  getWriter(): string {
-    return "";
   }
 }

@@ -5,6 +5,9 @@ export default class Path {
   private info: path.ParsedPath
 
   constructor(p: string) {
+    if (!p) {
+      console.error("oops");
+    }
     this.abs = p.charAt(0) === "/" ?
       p : `${process.cwd()}/${p}`;
 
