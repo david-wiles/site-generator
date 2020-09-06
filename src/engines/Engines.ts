@@ -46,6 +46,13 @@ export class Builder {
       fileStr = fileStr.replace(re, templateStr);
     });
 
+    // Find layout template if this template is a decorator and replace the layout's decorator area with the template
+    let layoutMatch = fileStr.match(/{{\s*#replace#\s*"([.0-9a-zA-Z/]+)"\s*}}/);
+    if (layoutMatch) {
+      let templateStr = this.build(Path.fromParts(this.templateDir.absPath(), layoutMatch[1])).toString();
+      fileStr = templateStr.replace(/{{\s*#replace#\s*}}/g, fileStr.substring(layoutMatch[0].length));
+    }
+
     let cached = this.tmplCache.get(path.absPath());
     if (!cached) {
       let buf = this.engine.buildPage(Buffer.from(fileStr));
