@@ -1,5 +1,8 @@
 import * as path from "path";
 
+/**
+ * Path provides a convenient way to get an absolute path from a relative one and store info related to the path
+ */
 export default class Path {
   private abs: string
   private info: path.ParsedPath
@@ -14,6 +17,7 @@ export default class Path {
     this.info = path.parse(this.abs);
   }
 
+  // Construct a path from parts of a string
   static fromParts(...parts: string[]): Path {
     parts.forEach((part, idx, arr) => {
       if (part[0] === "/" && idx != 0) {

@@ -1,14 +1,15 @@
 import {Engine} from "./Engines";
-import Path from "../common/Path";
 import MarkdownIt from "markdown-it";
-import * as fs from "fs";
+import Config from "../Config";
 
 export default class MarkdownEngine implements Engine {
   private md: MarkdownIt;
 
-  constructor() {}
+  constructor(config: Config) {
+    this.md = new MarkdownIt();
+  }
 
-  buildPage(buf: Buffer): Buffer {
+  executeEngine(buf: Buffer): Buffer {
     return Buffer.from(this.md.render(buf.toString()));
   }
 }

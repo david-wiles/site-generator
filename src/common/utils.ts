@@ -3,6 +3,7 @@ import fs from "fs";
 
 type WalkFn = (path: Path) => void;
 
+// Remove the entire prefix from a string, if it exists
 export function trimPrefix(prefix: string, str: string): string {
   let i = 0;
   if (prefix.length >= str.length) return str;
@@ -12,6 +13,7 @@ export function trimPrefix(prefix: string, str: string): string {
   return str.substring(i);
 }
 
+// Recursive walk all directory entries, starting from a specific Path
 export function walkDir(dir: Path, walkFn: WalkFn) {
   try {
     let entries = fs.readdirSync(dir.absPath());
