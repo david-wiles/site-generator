@@ -47,8 +47,10 @@ export default class Generator {
 
     if (daemon) {
       fs.watch(this.root.absPath(),
-        { persistent: true,
-          recursive: true },
+        {
+          persistent: true,
+          recursive: true
+        },
         (event, filename) => {
           if (filename) {
             if (!fs.statSync(filename).isDirectory()) {
@@ -84,7 +86,9 @@ export default class Generator {
       if (fs.statSync(path.absPath()).isDirectory()) {
         utils.walkDir(path, this.gatherPages.bind(this));
       } else {
-        this.paths.push(path);
+        if (path.absPath().endsWith(".html")) {
+          this.paths.push(path);
+        }
       }
     }
   }
