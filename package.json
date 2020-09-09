@@ -14,10 +14,10 @@
   },
   "scripts": {
     "start": "node bin/cmd-cv.js",
-    "clean": "rm -rf ./build",
+    "clean": "rm -rf ./lib",
     "build": "tsc",
-    "compile": "rm -rf ./build && tsc",
-    "run": "rm -rf ./bin && tsc && node bin/main.js"
+    "compile": "rm -rf ./lib && tsc",
+    "run": "rm -rf ./lib && tsc && node bin/cmd-cv.js"
   },
   "dependencies": {
     "@types/markdown-it": "^10.0.2",

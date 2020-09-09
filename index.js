@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = require("./build/");
+module.exports = require("./lib/");
