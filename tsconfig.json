@@ -5,7 +5,7 @@
     "target": "es5",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "bin",
+    "outDir": "build",
     "lib": ["es2020", "dom"]
   },
   "exclude": [

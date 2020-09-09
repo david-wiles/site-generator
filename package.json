@@ -1,16 +1,22 @@
 {
-  "name": "site-generator",
-  "version": "0.0.1",
-  "main": "index.js",
+  "name": "cmd-cv",
+  "version": "0.0.2",
+  "author": "David Wiles <davidwiles33@gmail.com>",
+  "description": "A fun little static site generator",
   "license": "MIT",
+  "main": "index.js",
+  "bin": {
+    "cmd-cv": "bin/cmd-cv.js"
+  },
   "devDependencies": {
     "@types/node": "^14.6.3",
     "typescript": "^3.9.5"
   },
   "scripts": {
-    "start": "node bin/main.js",
-    "clean": "rm -rf ./bin",
+    "start": "node bin/cmd-cv.js",
+    "clean": "rm -rf ./build",
     "build": "tsc",
+    "compile": "rm -rf ./build && tsc",
     "run": "rm -rf ./bin && tsc && node bin/main.js"
   },
   "dependencies": {

@@ -1,6 +1,6 @@
-import Generator from "./Generator";
-import {Command} from "commander";
-import Config from "./Config";
+#!/usr/bin/env node
+const Command = require("commander").Command;
+const cmd = require("..");
 
 const program = new Command();
 program.version("0.0.1")
@@ -12,6 +12,5 @@ program.version("0.0.1")
 
 program.parse(process.argv);
 
-var gen = new Generator(Config.fromArgs(program));
-
+const gen = new cmd.Generator(cmd.Config.fromArgs(program));
 gen.start(false);
