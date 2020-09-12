@@ -7,6 +7,12 @@ export interface PipelineStep {
 export class BufferPipeline {
   private steps = new Array<PipelineStep>();
 
+  static from(...step: PipelineStep[]): BufferPipeline {
+    let pipeline = new BufferPipeline();
+    pipeline.add(...step);
+    return pipeline;
+  }
+
   add(...step: PipelineStep[]) {
     this.steps.push(...step);
   }

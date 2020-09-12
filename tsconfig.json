@@ -4,8 +4,7 @@
     "esModuleInterop": true,
     "target": "es5",
     "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": "lib",
+    "outDir": "dist",
     "lib": ["es2020", "dom"]
   },
   "exclude": [

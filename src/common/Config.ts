@@ -1,10 +1,11 @@
 import commander from "commander";
-import Path from "./common/Path";
+import Path from "./Path";
 
 export default class Config {
   root: Path;
   templates: Path;
   out: Path;
+  watch: boolean;
   builder: string;
   writer: string;
   steps: string;
@@ -13,6 +14,7 @@ export default class Config {
     root: string,
     templates: string,
     out: string,
+    watch: boolean,
     builder: string,
     writer: string,
     steps: string
@@ -20,6 +22,7 @@ export default class Config {
     this.root = new Path(root);
     this.templates = Path.fromParts(root, templates);
     this.out = new Path(out);
+    this.watch = watch;
     this.builder = builder;
     this.writer = writer;
     this.steps = steps;
@@ -30,6 +33,7 @@ export default class Config {
       args.root,
       args.templates,
       args.out,
+      args.watch,
       args.builder,
       args.writer,
       args.steps

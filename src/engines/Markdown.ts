@@ -1,6 +1,6 @@
 import {Engine} from "./Engines";
 import MarkdownIt from "markdown-it";
-import Config from "../Config";
+import Config from "../common/Config";
 
 export default class MarkdownEngine implements Engine {
   private md: MarkdownIt;

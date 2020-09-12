@@ -1,3 +1,5 @@
-'use strict';
+const Generator = require("./dist/Generator");
 
-module.exports = require("./lib/");
+module.exports = {
+  Generator: Generator.default
+};

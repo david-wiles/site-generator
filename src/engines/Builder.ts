@@ -1,5 +1,5 @@
 import Path from "../common/Path";
-import Config from "../Config";
+import Config from "../common/Config";
 import fs from "fs";
 import escapeStringRegexp from "escape-string-regexp";
 import * as utils from "../common/utils";
@@ -20,16 +20,16 @@ export default class Builder {
   private engine: Engine
 
   // KV Pairs for all templates or pages which are used by a certain template
-  private parents: Map<string, string[]>;
+  private deps: Map<string, Set<string>>;
 
   // Cache of all templates that have already been built
   // If a template or page is modified, that template will not be used from the cache
   // but any non-modified templates will still be used
   private tmplCache = new Map<string, Buffer>();
 
-  constructor(config: Config, parents: Map<string, string[]>) {
+  constructor(config: Config, deps: Map<string, Set<string>>) {
     this.templateDir = config.templates;
-    this.parents = parents;
+    this.deps = deps;
     this.engine = EngineFactory(config);
   }
 
@@ -52,10 +52,10 @@ export default class Builder {
 
     dependents.forEach((tmpl) => {
       this.setTemplateDependency(path, tmpl);
-      fileStr = this.pasteTemplate(tmpl, fileStr);
+      fileStr = this.pasteTemplate(tmpl, fileStr, rebuild);
     });
 
-    fileStr = this.replaceTemplate(fileStr);
+    fileStr = this.replaceTemplate(path, fileStr, rebuild);
 
     let buf = this.engine.executeEngine(Buffer.from(fileStr));
     this.tmplCache.set(path.absPath(), buf);
@@ -79,11 +79,11 @@ export default class Builder {
 
   // Set the current template as a dependency for the page or template currently being built
   private setTemplateDependency(path: Path, tmpl: Path) {
-    let parent = this.parents.get(tmpl.absPath());
+    let parent = this.deps.get(tmpl.absPath());
     if (parent === undefined) {
-      this.parents.set(tmpl.absPath(), [path.absPath()]);
+      this.deps.set(tmpl.absPath(), new Set<string>([path.absPath()]));
     } else {
-      parent.push(path.absPath());
+      parent.add(path.absPath());
     }
   }
 
@@ -96,19 +96,21 @@ export default class Builder {
   }
 
   // Paste the template into the current page
-  private pasteTemplate(tmpl: Path, page: string): string {
-    let templateStr = this.build(tmpl, false).toString();
+  private pasteTemplate(tmpl: Path, page: string, rebuild: boolean): string {
+    let templateStr = this.build(tmpl, rebuild).toString();
     let re = new RegExp(`{{\\s*template\\s*"${escapeStringRegexp(this.getRelativeTmplPath(tmpl))}"\\s*}}`, 'g');
     return page.replace(re, templateStr);
   }
 
   // Paste the current page into the given template
-  private replaceTemplate(page: string): string {
+  private replaceTemplate(path: Path, page: string, rebuild: boolean): string {
     // Find layout template if this template is a decorator and replace the layout's decorator area with the template
     let layoutMatch = page.match(/{{\s*#replace#\s*"([.0-9a-zA-Z/]+)"\s*}}/);
     if (layoutMatch) {
-      let templateStr = this.build(Path.fromParts(this.templateDir.absPath(), layoutMatch[1]), false).toString();
+      let layout = Path.fromParts(this.templateDir.absPath(), layoutMatch[1]);
+      let templateStr = this.build(layout, rebuild).toString();
       page = templateStr.replace(/{{\s*#replace#\s*}}/g, page.substring(layoutMatch[0].length));
+      this.setTemplateDependency(path, layout);
       return page;
     } else {
       return page;

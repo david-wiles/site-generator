@@ -1,95 +1,127 @@
-import Config from "./Config";
-import Builder from "./engines/Builder";
-import Path from "./common/Path"
 import * as utils from "./common/utils";
 import * as fs from "fs";
-import {BufferPipeline} from "./pipeline/BufferPipeline";
-import {WriterFactory} from "./pipeline/writers";
-import {PipelineStepFactory} from "./pipeline/steps";
+import {EventEmitter} from "events";
+import Config from "./common/Config";
+import Builder from "./engines/Builder";
+import Path from "./common/Path"
+import {BufferPipeline, PipelineStep} from "./pipeline/BufferPipeline";
+import {Command} from "commander";
+import FileWriter from "./pipeline/FileWriter";
+
+type LifecycleEvent = () => void;
 
 /**
  * class Generator
  * The Generator is the facade object which orchestrates the template builder and pipelines.
  */
 export default class Generator {
+  private emitter: EventEmitter;
+
   private root: Path;
   private out: Path;
-  private config: Config;
 
+  private config: Config;
   private builder: Builder;
+
   private pipeline: BufferPipeline;
 
-  private paths = new Array<Path>();
-
-  // TODO find a better data structure for this
-  private tmplDependencies = new Map<string, string[]>();
+  private deps = new Map<string, Set<string>>();
 
   constructor(config: Config) {
+    this.emitter = new EventEmitter();
+
     this.config = config;
     this.root = config.root;
     this.out = config.out;
 
-    this.builder = new Builder(config, this.tmplDependencies);
+    this.builder = new Builder(config, this.deps);
 
-    this.pipeline = new BufferPipeline();
-    this.pipeline.add(...WriterFactory(config));
-    this.pipeline.add(...PipelineStepFactory(config));
+    this.pipeline = BufferPipeline.from(
+      new FileWriter(config)
+    );
+  }
+
+  // Creates a generator from a commander object
+  static from(program: Command): Generator {
+    return new Generator(Config.fromArgs(program));
   }
 
   /**
    * Start the site generator. This will build the entire site from scratch and then listen for file changes if
    * the daemon flag is set. On file change, all pages which depend on a template will be rebuilt.
-   * @param daemon
    */
-  start(daemon: boolean) {
-    utils.walkDir(this.root, this.gatherPages.bind(this));
-    this.paths.forEach(path => this.executePipeline(path, false));
+  buildSite() {
+    this.emitter.emit("build:start");
+    utils.walkDir<Array<Path>>(this.root, this.gatherPages.bind(this), new Array<Path>())
+      .forEach(path => this.executePipeline(path, false));
+    this.emitter.emit("build:done");
+  }
 
-    if (daemon) {
-      fs.watch(this.root.absPath(),
-        {
-          persistent: true,
-          recursive: true
-        },
-        (event, filename) => {
-          if (filename) {
-            if (!fs.statSync(filename).isDirectory()) {
-              this.recursiveRebuild(filename);
-            }
-          } else {
-            console.error("Error:", event);
+  watch(): void {
+    this.buildSite();
+    this.emitter.emit("watch:start");
+    fs.watch(
+      this.root.absPath(),
+      {
+        persistent: true,
+        recursive: true
+      },
+      (event, filename) => {
+        if (filename) {
+          let file = Path.fromParts(this.root.absPath(), filename);
+          if (!fs.statSync(file.absPath()).isDirectory()) {
+            this.gatherDeps(file)
+              .forEach(file => this.executePipeline(file, true));
           }
+        } else {
+          console.error("Error:", event);
         }
-      );
+      }
+    );
+  }
 
-      // Exit on exception
-      while (true);
-    }
+  addStep(step: PipelineStep) {
+    this.pipeline.add(step);
+  }
+
+  on(event: string, cb: LifecycleEvent) {
+    this.emitter.on(event, cb);
   }
 
   // Build a page a path and then execute the BufferPipeline for the resulting buffer
   private executePipeline(path: Path, rebuild: boolean) {
-    let buf = this.builder.build(path, rebuild);
-    this.pipeline.execute(buf, path);
+    // Stop execution of pipeline for files located in template directory
+    if (!path.absPath().startsWith(this.config.templates.absPath())) {
+      let buf = this.builder.build(path, rebuild);
+      this.pipeline.execute(buf, path);
+    }
   }
 
-  // Rebuild a page or template and also rebuild any pages which are dependent on it
-  private recursiveRebuild(filename: string) {
-    this.executePipeline(new Path(filename), true);
-    this.tmplDependencies.get(filename)
-      .forEach(tmpl => this.recursiveRebuild(tmpl));
+  // Gather all dependencies for a file
+  private gatherDeps(file: Path): Path[] {
+    let paths = new Array<Path>();
+
+    if (!file.absPath().startsWith(this.config.templates.absPath())) {
+      paths.push(file);
+    }
+
+    // TODO detect circular dependencies
+    this.deps.get(file.absPath())?.forEach(dep => paths.push(...this.gatherDeps(new Path(dep))));
+
+    return paths;
   }
 
   // Gather all pages to build by walking all files in the root directory, excluding the ones in the template folder
-  private gatherPages(path: Path) {
+  private gatherPages(path: Path, paths: Array<Path>): Array<Path> {
     if (!path.absPath().startsWith(this.config.templates.absPath())) {
       if (fs.statSync(path.absPath()).isDirectory()) {
-        utils.walkDir(path, this.gatherPages.bind(this));
+        paths = utils.walkDir(path, this.gatherPages.bind(this), paths);
       } else {
         if (path.absPath().endsWith(".html")) {
-          this.paths.push(path);
+          paths.push(path);
         }
       }
     }
+    return paths;
   }
 }

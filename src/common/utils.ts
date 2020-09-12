@@ -1,7 +1,7 @@
 import Path from "./Path";
 import fs from "fs";
 
-type WalkFn = (path: Path) => void;
+type WalkFn<T> = (path: Path, acc: T) => T;
 
 // Remove the entire prefix from a string, if it exists
 export function trimPrefix(prefix: string, str: string): string {
@@ -14,13 +14,14 @@ export function trimPrefix(prefix: string, str: string): string {
 }
 
 // Recursive walk all directory entries, starting from a specific Path
-export function walkDir(dir: Path, walkFn: WalkFn) {
+export function walkDir<T>(dir: Path, walkFn: WalkFn<T>, acc?: T): T {
   try {
     let entries = fs.readdirSync(dir.absPath());
     entries.forEach((entry) => {
-      walkFn(Path.fromParts(dir.absPath(), entry));
+      acc = walkFn(Path.fromParts(dir.absPath(), entry), acc);
     });
   } catch (err) {
     console.error("Error:", err);
   }
+  return acc;
 }

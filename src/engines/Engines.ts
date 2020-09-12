@@ -1,4 +1,4 @@
-import Config from "../Config";
+import Config from "../common/Config";
 import MarkdownEngine from "./Markdown";
 
 export interface Engine {
