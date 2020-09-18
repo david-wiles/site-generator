@@ -25,3 +25,15 @@ export function walkDir<T>(dir: Path, walkFn: WalkFn<T>, acc?: T): T {
   }
   return acc;
 }
+
+// Get a relative path based on a given root directory
+export function relativePath(root: Path, rel: Path) {
+  let path = trimPrefix(root.absPath(), rel.absPath())
+  return path.startsWith("/") ?
+    path.substring(1) :
+    path;
+}
+
+export function setTemplateDependency(path: Path, tmpl: Path) {
+
+}

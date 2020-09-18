@@ -26,10 +26,11 @@ var utils = __importStar(require("./common/utils"));
 var fs = __importStar(require("fs"));
 var events_1 = require("events");
 var Config_1 = __importDefault(require("./common/Config"));
-var Builder_1 = __importDefault(require("./engines/Builder"));
+var Builder_1 = __importDefault(require("./builder/Builder"));
 var Path_1 = __importDefault(require("./common/Path"));
 var BufferPipeline_1 = require("./pipeline/BufferPipeline");
 var FileWriter_1 = __importDefault(require("./pipeline/FileWriter"));
+var Logger_1 = __importDefault(require("./Logger"));
 /**
  * class Generator
  * The Generator is the facade object which orchestrates the template builder and pipelines.
@@ -42,7 +43,14 @@ var Generator = /** @class */ (function () {
         this.root = config.root;
         this.out = config.out;
         this.builder = new Builder_1.default(config, this.deps);
-        this.pipeline = BufferPipeline_1.BufferPipeline.from(new FileWriter_1.default(config));
+        this.pipeline = new BufferPipeline_1.BufferPipeline();
+        // Register log messages on lifecycle events
+        this.emitter.on("build:start", function () { return Logger_1.default.info("Starting build process..."); });
+        this.emitter.on("build:done", function () { return Logger_1.default.info("Finished building files"); });
+        this.emitter.on("watch:start", function () { return Logger_1.default.info("Watching files for changes..."); });
+        this.emitter.on("watch:rebuild", function (filename) { return Logger_1.default.progress("\tRebuilding " + filename); });
+        this.emitter.on("pipeline:start", function (filename) { return Logger_1.default.progress("\tBuilding page at " + filename.absPath() + "..."); });
+        this.emitter.on("pipeline:finished", function (filename) { return Logger_1.default.progress("\tFinished building page at " + filename.absPath()); });
     }
     // Creates a generator from a commander object
     Generator.from = function (program) {
@@ -54,9 +62,11 @@ var Generator = /** @class */ (function () {
      */
     Generator.prototype.buildSite = function () {
         var _this = this;
+        // Finalize pipeline by adding output
+        this.pipeline.add(new FileWriter_1.default(this.config));
         this.emitter.emit("build:start");
         utils.walkDir(this.root, this.gatherPages.bind(this), new Array())
-            .forEach(function (path) { return _this.executePipeline(path, false); });
+            .forEach(function (path) { return _this.executePipeline(path, true); });
         this.emitter.emit("build:done");
     };
     Generator.prototype.watch = function () {
@@ -70,12 +80,13 @@ var Generator = /** @class */ (function () {
             if (filename) {
                 var file = Path_1.default.fromParts(_this.root.absPath(), filename);
                 if (!fs.statSync(file.absPath()).isDirectory()) {
+                    _this.emitter.emit("watch:rebuild", filename);
                     _this.gatherDeps(file)
-                        .forEach(function (file) { return _this.executePipeline(file, true); });
+                        .forEach(function (file) { return _this.executePipeline(file, false); });
                 }
             }
             else {
-                console.error("Error:", event);
+                Logger_1.default.error("Error: " + event);
             }
         });
     };
@@ -86,12 +97,14 @@ var Generator = /** @class */ (function () {
         this.emitter.on(event, cb);
     };
     // Build a page a path and then execute the BufferPipeline for the resulting buffer
-    Generator.prototype.executePipeline = function (path, rebuild) {
+    Generator.prototype.executePipeline = function (path, useCache) {
+        this.emitter.emit("pipeline:start", path);
         // Stop execution of pipeline for files located in template directory
         if (!path.absPath().startsWith(this.config.templates.absPath())) {
-            var buf = this.builder.build(path, rebuild);
+            var buf = this.builder.buildPage(path, useCache);
             this.pipeline.execute(buf, path);
         }
+        this.emitter.emit("pipeline:finished", path);
     };
     // Gather all dependencies for a file
     Generator.prototype.gatherDeps = function (file) {

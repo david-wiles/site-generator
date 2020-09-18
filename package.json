@@ -5,7 +5,6 @@
   "description": "A fun little static site generator",
   "license": "MIT",
   "main": "index.js",
-  "types": "index.d.ts",
   "bin": {
     "cmd-cv": "bin/cmd-cv.js"
   },
@@ -20,9 +19,9 @@
     "test:e2e": "node bin/cmd-cv.js -r test/data -o output -w"
   },
   "dependencies": {
-    "@types/markdown-it": "^10.0.2",
+    "@types/html-minifier": "^4.0.0",
     "commander": "^6.1.0",
     "escape-string-regexp": "^4.0.0",
-    "markdown-it": "^11.0.0"
+    "html-minifier": "^4.0.0"
   }
 }

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.walkDir = exports.trimPrefix = void 0;
+exports.setTemplateDependency = exports.relativePath = exports.walkDir = exports.trimPrefix = void 0;
 var Path_1 = __importDefault(require("./Path"));
 var fs_1 = __importDefault(require("fs"));
 // Remove the entire prefix from a string, if it exists
@@ -32,3 +32,14 @@ function walkDir(dir, walkFn, acc) {
     return acc;
 }
 exports.walkDir = walkDir;
+// Get a relative path based on a given root directory
+function relativePath(root, rel) {
+    var path = trimPrefix(root.absPath(), rel.absPath());
+    return path.startsWith("/") ?
+        path.substring(1) :
+        path;
+}
+exports.relativePath = relativePath;
+function setTemplateDependency(path, tmpl) {
+}
+exports.setTemplateDependency = setTemplateDependency;

@@ -2,13 +2,12 @@ import * as utils from "./common/utils";
 import * as fs from "fs";
 import {EventEmitter} from "events";
 import Config from "./common/Config";
-import Builder from "./engines/Builder";
+import Builder from "./builder/Builder";
 import Path from "./common/Path"
 import {BufferPipeline, PipelineStep} from "./pipeline/BufferPipeline";
 import {Command} from "commander";
 import FileWriter from "./pipeline/FileWriter";
-
-type LifecycleEvent = () => void;
+import Logger from "./Logger";
 
 /**
  * class Generator
@@ -36,9 +35,15 @@ export default class Generator {
 
     this.builder = new Builder(config, this.deps);
 
-    this.pipeline = BufferPipeline.from(
-      new FileWriter(config)
-    );
+    this.pipeline = new BufferPipeline();
+
+    // Register log messages on lifecycle events
+    this.emitter.on("build:start", () => Logger.info("Starting build process..."));
+    this.emitter.on("build:done", () => Logger.info("Finished building files"));
+    this.emitter.on("watch:start", () => Logger.info("Watching files for changes..."));
+    this.emitter.on("watch:rebuild", (filename) => Logger.progress(`\tRebuilding ${filename}`));
+    this.emitter.on("pipeline:start", (filename) => Logger.progress(`\tBuilding page at ${filename.absPath()}...`));
+    this.emitter.on("pipeline:finished", (filename) => Logger.progress(`\tFinished building page at ${filename.absPath()}`));
   }
 
   // Creates a generator from a commander object
@@ -51,9 +56,11 @@ export default class Generator {
    * the daemon flag is set. On file change, all pages which depend on a template will be rebuilt.
    */
   buildSite() {
+    // Finalize pipeline by adding output
+    this.pipeline.add(new FileWriter(this.config));
     this.emitter.emit("build:start");
     utils.walkDir<Array<Path>>(this.root, this.gatherPages.bind(this), new Array<Path>())
-      .forEach(path => this.executePipeline(path, false));
+      .forEach(path => this.executePipeline(path, true));
     this.emitter.emit("build:done");
   }
 
@@ -70,11 +77,12 @@ export default class Generator {
         if (filename) {
           let file = Path.fromParts(this.root.absPath(), filename);
           if (!fs.statSync(file.absPath()).isDirectory()) {
+            this.emitter.emit("watch:rebuild", filename);
             this.gatherDeps(file)
-              .forEach(file => this.executePipeline(file, true));
+              .forEach(file => this.executePipeline(file, false));
           }
         } else {
-          console.error("Error:", event);
+          Logger.error(`Error: ${event}`);
         }
       }
     );
@@ -84,17 +92,19 @@ export default class Generator {
     this.pipeline.add(step);
   }
 
-  on(event: string, cb: LifecycleEvent) {
+  on(event: string, cb) {
     this.emitter.on(event, cb);
   }
 
   // Build a page a path and then execute the BufferPipeline for the resulting buffer
-  private executePipeline(path: Path, rebuild: boolean) {
+  private executePipeline(path: Path, useCache: boolean) {
+    this.emitter.emit("pipeline:start", path);
     // Stop execution of pipeline for files located in template directory
     if (!path.absPath().startsWith(this.config.templates.absPath())) {
-      let buf = this.builder.build(path, rebuild);
+      let buf = this.builder.buildPage(path, useCache);
       this.pipeline.execute(buf, path);
     }
+    this.emitter.emit("pipeline:finished", path);
   }
 
   // Gather all dependencies for a file
