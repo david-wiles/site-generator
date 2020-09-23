@@ -44,7 +44,7 @@ export default class Builder {
     let text = fs.readFileSync(path.absPath()).toString();
 
     // Find layout template if this template is a decorator and replace the layout's decorator area with the template
-    let layoutMatch = text.match(/{{\s*#replace#\s*"([.0-9a-zA-Z/]+)"\s*}}/);
+    let layoutMatch = text.match(/{{\s*#replace#\s*"([.0-9a-zA-Z/-]+)"\s*}}/);
     if (layoutMatch) {
       let layout = Path.fromParts(this.templateDir.absPath(), layoutMatch[1]);
       let templateStr = this.buildTemplates(layout, useCache);
@@ -63,7 +63,7 @@ export default class Builder {
    */
   buildTemplates(path: Path, useCache: boolean): string {
     let cached = this.cache.get(path.absPath());
-    if (cached && !useCache) {
+    if (cached && useCache) {
       return cached;
     }
 

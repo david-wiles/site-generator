@@ -35,7 +35,7 @@ var Builder = /** @class */ (function () {
         }
         var text = fs_1.default.readFileSync(path.absPath()).toString();
         // Find layout template if this template is a decorator and replace the layout's decorator area with the template
-        var layoutMatch = text.match(/{{\s*#replace#\s*"([.0-9a-zA-Z/]+)"\s*}}/);
+        var layoutMatch = text.match(/{{\s*#replace#\s*"([.0-9a-zA-Z/-]+)"\s*}}/);
         if (layoutMatch) {
             var layout = Path_1.default.fromParts(this.templateDir.absPath(), layoutMatch[1]);
             var templateStr = this.buildTemplates(layout, useCache);
@@ -52,7 +52,7 @@ var Builder = /** @class */ (function () {
      */
     Builder.prototype.buildTemplates = function (path, useCache) {
         var cached = this.cache.get(path.absPath());
-        if (cached && !useCache) {
+        if (cached && useCache) {
             return cached;
         }
         var text = fs_1.default.readFileSync(path.absPath()).toString();

@@ -106,7 +106,7 @@ var Generator = /** @class */ (function () {
         }
         this.emitter.emit("pipeline:finished", path);
     };
-    // Gather all dependencies for a file
+    // Gather all files that use this file, directly or indirectly
     Generator.prototype.gatherDeps = function (file) {
         var _this = this;
         var _a;

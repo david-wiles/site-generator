@@ -56,8 +56,9 @@ export default class Generator {
    * the daemon flag is set. On file change, all pages which depend on a template will be rebuilt.
    */
   buildSite() {
-    // Finalize pipeline by adding output
+    // Finalize pipeline by adding output. TODO move this out of this class
     this.pipeline.add(new FileWriter(this.config));
+
     this.emitter.emit("build:start");
     utils.walkDir<Array<Path>>(this.root, this.gatherPages.bind(this), new Array<Path>())
       .forEach(path => this.executePipeline(path, true));
@@ -107,7 +108,7 @@ export default class Generator {
     this.emitter.emit("pipeline:finished", path);
   }
 
-  // Gather all dependencies for a file
+  // Gather all files that use this file, directly or indirectly
   private gatherDeps(file: Path): Path[] {
     let paths = new Array<Path>();
 
