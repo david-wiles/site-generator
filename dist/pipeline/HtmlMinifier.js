@@ -10,3 +10,4 @@ var HtmlMinifier = /** @class */ (function () {
     return HtmlMinifier;
 }());
 exports.default = HtmlMinifier;
+//# sourceMappingURL=HtmlMinifier.js.map

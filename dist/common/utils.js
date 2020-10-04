@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setTemplateDependency = exports.relativePath = exports.walkDir = exports.trimPrefix = void 0;
+exports.relativePath = exports.walkDir = exports.trimPrefix = void 0;
 var Path_1 = __importDefault(require("./Path"));
 var fs_1 = __importDefault(require("fs"));
 // Remove the entire prefix from a string, if it exists
@@ -15,7 +15,7 @@ function trimPrefix(prefix, str) {
         while (i < prefix.length && prefix[i] === str[i])
             i += 1;
     }
-    return str.substring(i);
+    return i === prefix.length ? str.substring(i) : str;
 }
 exports.trimPrefix = trimPrefix;
 // Recursive walk all directory entries, starting from a specific Path
@@ -35,11 +35,11 @@ exports.walkDir = walkDir;
 // Get a relative path based on a given root directory
 function relativePath(root, rel) {
     var path = trimPrefix(root.absPath(), rel.absPath());
+    if (path === rel.absPath())
+        throw new Error("Relative path is not in root subtree!");
     return path.startsWith("/") ?
         path.substring(1) :
         path;
 }
 exports.relativePath = relativePath;
-function setTemplateDependency(path, tmpl) {
-}
-exports.setTemplateDependency = setTemplateDependency;
+//# sourceMappingURL=utils.js.map

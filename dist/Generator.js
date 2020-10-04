@@ -62,7 +62,7 @@ var Generator = /** @class */ (function () {
      */
     Generator.prototype.buildSite = function () {
         var _this = this;
-        // Finalize pipeline by adding output
+        // Finalize pipeline by adding output. TODO move this out of this class
         this.pipeline.add(new FileWriter_1.default(this.config));
         this.emitter.emit("build:start");
         utils.walkDir(this.root, this.gatherPages.bind(this), new Array())
@@ -135,3 +135,4 @@ var Generator = /** @class */ (function () {
     return Generator;
 }());
 exports.default = Generator;
+//# sourceMappingURL=Generator.js.map
