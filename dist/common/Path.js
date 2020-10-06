@@ -60,4 +60,3 @@ var Path = /** @class */ (function () {
     return Path;
 }());
 exports.default = Path;
-//# sourceMappingURL=Path.js.map

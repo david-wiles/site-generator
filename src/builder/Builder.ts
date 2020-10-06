@@ -83,7 +83,7 @@ export default class Builder {
   }
 
   // Build all the templates contained in the text string
-  private buildDependencies(text: string, path: Path, useCache: boolean): string {
+  buildDependencies(text: string, path: Path, useCache: boolean): string {
     let templates = this.gatherTemplates(text);
 
     templates.forEach((tmpl) => {

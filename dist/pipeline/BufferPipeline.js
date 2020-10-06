@@ -30,4 +30,3 @@ var BufferPipeline = /** @class */ (function () {
     return BufferPipeline;
 }());
 exports.BufferPipeline = BufferPipeline;
-//# sourceMappingURL=BufferPipeline.js.map

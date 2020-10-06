@@ -39,4 +39,3 @@ var FileWriter = /** @class */ (function () {
     return FileWriter;
 }());
 exports.default = FileWriter;
-//# sourceMappingURL=FileWriter.js.map

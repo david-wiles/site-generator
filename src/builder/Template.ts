@@ -63,6 +63,8 @@ export class DataTemplate implements Template {
       text = text.replace(re, val.toString());
     }
 
+    text = this.builder.buildDependencies(text, this.dataPath, false);
+
     let re = new RegExp(`{{\\s*template\\s*"${escapeStringRegexp(utils.relativePath(this.tmplDir, this.path))}"\\s*"${escapeStringRegexp(utils.relativePath(this.tmplDir, this.dataPath))}"\\s*}}`, 'g')
     return page.replace(re, text);
   }

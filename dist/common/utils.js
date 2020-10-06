@@ -42,4 +42,3 @@ function relativePath(root, rel) {
         path;
 }
 exports.relativePath = relativePath;
-//# sourceMappingURL=utils.js.map

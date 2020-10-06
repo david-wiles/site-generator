@@ -1,0 +1,4 @@
+{
+  "title": "This website",
+  "content": "{{ template \"components/blog-post.html\" \"data/this-website-creating-a-static-site.json\" }}"
+}
