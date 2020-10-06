@@ -59,6 +59,7 @@ var DataTemplate = /** @class */ (function () {
             var re_1 = new RegExp("{{\\s*" + escape_string_regexp_1.default(key) + "\\s*}}", 'g');
             text = text.replace(re_1, val.toString());
         }
+        text = this.builder.buildDependencies(text, this.dataPath, false);
         var re = new RegExp("{{\\s*template\\s*\"" + escape_string_regexp_1.default(utils.relativePath(this.tmplDir, this.path)) + "\"\\s*\"" + escape_string_regexp_1.default(utils.relativePath(this.tmplDir, this.dataPath)) + "\"\\s*}}", 'g');
         return page.replace(re, text);
     };
@@ -69,4 +70,3 @@ var DataTemplate = /** @class */ (function () {
     return DataTemplate;
 }());
 exports.DataTemplate = DataTemplate;
-//# sourceMappingURL=Template.js.map

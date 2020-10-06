@@ -20,4 +20,3 @@ var Config = /** @class */ (function () {
     return Config;
 }());
 exports.default = Config;
-//# sourceMappingURL=Config.js.map
