@@ -1,5 +1,4 @@
-const utils = require("../dist/common/utils");
-const Path = require("../dist/common/Path").default;
+const utils = require("../lib/util");
 
 describe("trimPrefix removes leading characters from a string", () => {
 
@@ -19,16 +18,4 @@ describe("trimPrefix removes leading characters from a string", () => {
     expect(utils.trimPrefix("abc", "efgabc")).toBe("efgabc");
     expect(utils.trimPrefix("qqq", "qpla")).toBe("qpla");
   })
-});
-
-describe("relativePath returns the correct file path", () => {
-  test("relative path that contains the root will return relative path", () => {
-    expect(utils.relativePath(new Path("/usr/bin"), new Path("/usr/bin/openssl"))).toBe("openssl");
-    expect(utils.relativePath(new Path("/abc/def"), new Path("/abc/def/g/hij"))).toBe("g/hij");
-    expect(utils.relativePath(new Path("/abc/def"), new Path("/abc/def/g/hij/lmno"))).toBe("g/hij/lmno");
-  });
-  test("relative path not in root will throw error", () => {
-    expect(() => utils.relativePath(new Path("/abc/def"), new Path("/ghi/jkl"))).toThrow();
-    expect(() => utils.relativePath(new Path("/asdf/qwer/asdf"), new Path("/qwer/erty/asdf"))).toThrow();
-  });
 });
