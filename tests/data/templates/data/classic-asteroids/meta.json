@@ -1,0 +1,8 @@
+{
+  "title": "Classic Asteroids",
+  "date": "October 19th, 2020",
+  "description": "A web-based remake of a classic arcade game",
+  "preview": "<a href=\"https://wiles.fyi/asteroids.html\">Asteroids</a>",
+  "content": "{{ template \"components/blog-post.html\" \"data/classic-asteroids/content.json\" }}",
+  "href": "/blog/classic-asteroids.html"
+}

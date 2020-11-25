@@ -1,0 +1,8 @@
+{
+  "title": "Starting a New Software Project",
+  "date": "October 6th, 2020",
+  "description": "Overcoming technical writer's block",
+  "preview": "The phrase “writer’s block” is used to describe the feeling of getting stuck when starting a new project. Although the true meaning of writer’s block is closer to a years-long “creative drought” almost everyone has this shared experience and developers are no different.  Making progress on a new project can be a slow and tedious process, especially for inexperienced programmers. I believe that the reasons for this are not due to the skill of the programmer, but a combination of inexperience and lack of confidence.",
+  "content": "{{ template \"components/blog-post.html\" \"data/starting-a-new-software-project/content.json\" }}",
+  "href": "/blog/starting-a-new-software-project.html"
+}

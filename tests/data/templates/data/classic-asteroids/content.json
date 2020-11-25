@@ -1,0 +1,4 @@
+{
+  "title": "Classic <i>Asteroids</i>",
+  "html": "<p>One of first hits of the arcade era was Atari’s Asteroids. I would be willing to bet that anyone who has played video\n  games has played a version of this game at some point; it is up there with Space Invaders as one of the most well\n  known games of all time. For this reason, I’ve decided to remake it in a web-based version.</p>\n\n<p>You can play the game here: <a href=\"/asteroids.html\">https://wiles.fyi/asteroids.html</a>.</p>\n\n<p>I’ll make another post in the future describing my implementation in depth, but for the present, you can find the\n  repository on github here: <a href=\"https://github.com/david-wiles/asteroids-ts\">https://github.com/david-wiles/asteroids-ts</a>.</p>\n"
+}

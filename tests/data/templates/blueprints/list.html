@@ -9,10 +9,12 @@
 {{template "components/header.html"}}
 
 <div class="main-content">
-  {{ content }}
+  <ul class="no-bullet">
+    {{ posts }}
+  </ul>
 </div>
 
 {{template "components/footer.html"}}
-{{template "components/scripts.html"}}
+<script src="/static/js/index.js"></script>
 </body>
 </html>

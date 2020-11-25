@@ -9,23 +9,17 @@
     "cmd-cv": "bin/cmd-cv.js"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.14",
-    "@types/node": "^14.6.3",
-    "jest": "^26.4.2",
-    "ts-jest": "^26.4.0",
-    "typescript": "^3.9.5"
+    "jest": "^26.4.2"
   },
   "scripts": {
     "run": "node bin/cmd-cv.js",
-    "compile:debug": "rm -rf ./dist/ && tsc --sourceMap",
-    "compile:release": "rm -rf ./dist/ && tsc",
     "test:e2e": "node bin/cmd-cv.js -r tests/data -o output -w",
     "test": "jest"
   },
   "dependencies": {
-    "@types/html-minifier": "^4.0.0",
     "commander": "^6.1.0",
     "escape-string-regexp": "^4.0.0",
-    "html-minifier": "^4.0.0"
+    "html-minifier": "^4.0.0",
+    "mkdirp": "^1.0.4"
   }
 }

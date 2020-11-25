@@ -1,0 +1,8 @@
+{
+  "title": "This Website: Creating a Static Site",
+  "date": "September 24th, 2020",
+  "description": "How it's made: this website",
+  "preview": "When I started working on what I thought would be my blog, I thought that it would be easy to create a static website.\n  After all, it’s just HTML, right? The first iteration of my blog turned out to be a flop, as did the second and third.\n  Although a static website is just HTML (and CSS and JS), there are plenty of other considerations going into design\n  and architecture decisions that I didn’t anticipate.\n",
+  "content": "{{ template \"components/blog-post.html\" \"data/this-website-creating-a-static-site/content.json\" }}",
+  "href": "/blog/this-website-creating-a-static-site.html"
+}

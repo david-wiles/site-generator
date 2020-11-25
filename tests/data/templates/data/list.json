@@ -1,0 +1,4 @@
+{
+  "title": "David's Blog - All Posts",
+  "posts": "{{ template \"components/blog-post-li.html\" \"data/classic-asteroids/meta.json\" }}\n{{ template \"components/blog-post-li.html\" \"data/starting-a-new-software-project/meta.json\" }}\n{{ template \"components/blog-post-li.html\" \"data/this-website-creating-a-static-site/meta.json\" }}\n"
+}

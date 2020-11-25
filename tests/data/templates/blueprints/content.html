@@ -1,17 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
-{{template "components/head.html"}}
+  {{template "components/head.html"}}
+  <title>{{ title }}</title>
 </head>
 <body>
 
 {{template "components/header.html"}}
 
 <div class="main-content">
-{{ #replace# }}
+  {{ content }}
 </div>
 
 {{template "components/footer.html"}}
-{{template "components/scripts.html"}}
+<script src="/static/js/index.js"></script>
 </body>
 </html>

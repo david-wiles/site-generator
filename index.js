@@ -1,7 +1,8 @@
-const Generator = require("./dist/Generator");
-const HtmlMinifer = require("./dist/pipeline/HtmlMinifier");
+const Generator = require("./lib/generator");
+const Template = require("./lib/template");
 
 module.exports = {
-  Generator: Generator.default,
-  HtmlMinifer: HtmlMinifer.default
+  build: Template.buildTemplate,
+  buildDir: Generator.buildDir,
+  watch: Generator.watch
 };
