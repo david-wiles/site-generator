@@ -1,7 +1,11 @@
 const {buildDir, build, watch} = require("..");
 
 describe("Generator works as expected", () => {
-  test("Generator builds a site", () => {
+  test("build", () => {
+
+  });
+
+  test("build again", () => {
 
   });
 });
